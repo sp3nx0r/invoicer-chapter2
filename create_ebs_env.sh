@@ -76,15 +76,17 @@ aws elasticbeanstalk create-application \
 echo "ElasticBeanTalk application created"
 
 # Get the name of the latest Docker solution stack
-dockerstack="$(aws elasticbeanstalk list-available-solution-stacks | \
-    jq -r '.SolutionStacks[]' | grep -P '.+Amazon Linux.+Docker.+' | head -1)"
+dockerstack="64bit Amazon Linux 2017.03 v2.7.4 running Docker 17.03.2-ce"
+
+#"$(aws elasticbeanstalk list-available-solution-stacks | \
+#    jq -r '.SolutionStacks[]' | grep -P '.+Amazon Linux.+Docker.+2\.7.+' | head -1)"
 
 # Create the EB API environment
 sed "s/POSTGRESPASSREPLACEME/$dbpass/" ebs-options.json > tmp/$identifier/ebs-options.json || fail
 sed -i "s/POSTGRESHOSTREPLACEME/$dbhost/" tmp/$identifier/ebs-options.json || fail
 aws elasticbeanstalk create-environment \
     --application-name $identifier \
-    --environment-name $identifier-invoicer-api \
+    --environment-name invoicer-api \
     --description "Invoicer API environment" \
     --tags "Key=Owner,Value=$(whoami)" \
     --solution-stack-name "$dockerstack" \
